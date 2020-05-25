@@ -1,0 +1,1 @@
+# TinyScript Go Version
