@@ -196,3 +196,76 @@ func MakeOp(it *common.PeekIterator) (*Token, error) {
 	}
 	return nil, NewLexicalError("unexpected error")
 }
+
+// MakeNumber 构造数字
+func MakeNumber(it *common.PeekIterator) (*Token, error) {
+	s, state := strings.Builder{}, 0
+
+	for it.HasNext() {
+		lookahead := it.Peek()
+		switch state {
+		case 0:
+			if lookahead == "0" {
+				state = 1
+			} else if common.IsNumber(lookahead) {
+				state = 2
+			} else if lookahead == "+" || lookahead == "-" {
+				state = 3
+			} else if lookahead == "." {
+				state = 5
+			}
+		case 1: // 数字以 0 开头
+			if lookahead == "0" {
+				state = 1
+			} else if common.IsNumber(lookahead) {
+				state = 2
+			} else if lookahead == "." {
+				state = 4
+			} else {
+				return NewToken(INTEGER, s.String()), nil
+			}
+		case 2: // 1-9
+			if common.IsNumber(lookahead) {
+				state = 2
+			} else if lookahead == "." {
+				state = 4
+			} else {
+				return NewToken(INTEGER, s.String()), nil
+			}
+		case 3: // +,-
+			if common.IsNumber(lookahead) {
+				state = 2
+			} else if lookahead == "." {
+				state = 5
+			} else {
+				return nil, NewLexicalError("unexpected error")
+			}
+		case 4: // .
+			if lookahead == "." {
+				return nil, NewLexicalError("unexpected error")
+			} else if common.IsNumber(lookahead) {
+				state = 20
+			} else {
+				return NewToken(FLOAT, s.String()), nil
+			}
+		case 5: // 起始为 . 的情况
+			if common.IsNumber(lookahead) {
+				state = 20
+			} else {
+				return nil, NewLexicalError("unexpected error")
+			}
+		case 20: // 数字中已经带有 . 了，小数部分
+			if common.IsNumber(lookahead) {
+				state = 20
+			} else if lookahead == "." {
+				return nil, NewLexicalError("unexpected error")
+			} else {
+				return NewToken(FLOAT, s.String()), nil
+			}
+		}
+		it.Next()
+		s.WriteString(lookahead)
+	}
+
+	return nil, NewLexicalError("unexpected error")
+}

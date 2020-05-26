@@ -144,3 +144,54 @@ func TestMakeOp(t *testing.T) {
 		})
 	}
 }
+
+func TestMakeNumber(t *testing.T) {
+	type args struct {
+		it *common.PeekIterator
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    *Token
+		wantErr bool
+	}{
+		{name: "test1", args: args{it: common.NewPeekIterator(strings.NewReader("234 ab"))}, want: NewToken(INTEGER, "234"), wantErr: false},
+		{name: "test2", args: args{it: common.NewPeekIterator(strings.NewReader("+234 ab"))}, want: NewToken(INTEGER, "+234"), wantErr: false},
+		{name: "test3", args: args{it: common.NewPeekIterator(strings.NewReader("-234 ab"))}, want: NewToken(INTEGER, "-234"), wantErr: false},
+		{name: "test4", args: args{it: common.NewPeekIterator(strings.NewReader("234. ab"))}, want: NewToken(FLOAT, "234."), wantErr: false},
+		{name: "test6", args: args{it: common.NewPeekIterator(strings.NewReader("+234.2 ab"))}, want: NewToken(FLOAT, "+234.2"), wantErr: false},
+		{name: "test7", args: args{it: common.NewPeekIterator(strings.NewReader("-234.2 ab"))}, want: NewToken(FLOAT, "-234.2"), wantErr: false},
+		{name: "test8", args: args{it: common.NewPeekIterator(strings.NewReader("-.2 ab"))}, want: NewToken(FLOAT, "-.2"), wantErr: false},
+		{name: "test9", args: args{it: common.NewPeekIterator(strings.NewReader("0.2 ab"))}, want: NewToken(FLOAT, "0.2"), wantErr: false},
+		{name: "test10", args: args{it: common.NewPeekIterator(strings.NewReader("+0.2 ab"))}, want: NewToken(FLOAT, "+0.2"), wantErr: false},
+		{name: "test11", args: args{it: common.NewPeekIterator(strings.NewReader("-0.23332 ab"))}, want: NewToken(FLOAT, "-0.23332"), wantErr: false},
+		{name: "test12", args: args{it: common.NewPeekIterator(strings.NewReader("-0.233332.233.322"))}, want: nil, wantErr: true},
+		{name: "test13", args: args{it: common.NewPeekIterator(strings.NewReader("-0.233332.abc.322"))}, want: nil, wantErr: true},
+		{name: "test14", args: args{it: common.NewPeekIterator(strings.NewReader("233a332.abc.322"))}, want: NewToken(INTEGER, "233"), wantErr: false},
+		{name: "test15", args: args{it: common.NewPeekIterator(strings.NewReader(".233 aaa"))}, want: NewToken(FLOAT, ".233"), wantErr: false},
+		{name: "test16", args: args{it: common.NewPeekIterator(strings.NewReader(".233... aaa"))}, want: nil, wantErr: true},
+		{name: "test17", args: args{it: common.NewPeekIterator(strings.NewReader(".233.23 aaa"))}, want: nil, wantErr: true},
+		{name: "test18", args: args{it: common.NewPeekIterator(strings.NewReader(".+d aaa"))}, want: nil, wantErr: true},
+		{name: "test19", args: args{it: common.NewPeekIterator(strings.NewReader("- aaa"))}, want: nil, wantErr: true},
+		{name: "test20", args: args{it: common.NewPeekIterator(strings.NewReader("+ aaa"))}, want: nil, wantErr: true},
+		{name: "test21", args: args{it: common.NewPeekIterator(strings.NewReader(". aaa"))}, want: nil, wantErr: true},
+		{name: "test22", args: args{it: common.NewPeekIterator(strings.NewReader("aa aaa"))}, want: nil, wantErr: true},
+		{name: "test23", args: args{it: common.NewPeekIterator(strings.NewReader("0+ aaa"))}, want: NewToken(INTEGER, "0"), wantErr: false},
+		{name: "test24", args: args{it: common.NewPeekIterator(strings.NewReader("000023 aaa"))}, want: NewToken(INTEGER, "000023"), wantErr: false},
+		{name: "test25", args: args{it: common.NewPeekIterator(strings.NewReader("2..23 aaa"))}, want: nil, wantErr: true},
+		{name: "test26", args: args{it: common.NewPeekIterator(strings.NewReader("0..23 aaa"))}, want: nil, wantErr: true},
+		{name: "test27", args: args{it: common.NewPeekIterator(strings.NewReader("-0..23 aaa"))}, want: nil, wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := MakeNumber(tt.args.it)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("MakeNumber() error = %v, wantErr %v, want value %v", err, tt.wantErr, got)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("MakeNumber() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
