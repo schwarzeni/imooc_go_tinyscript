@@ -11,8 +11,8 @@ var eq = assert.Eq
 func Test_all(t *testing.T) {
 	str := "abcd"
 	pi := NewPeekIterator(strings.NewReader(str))
-
 	eq(pi.Peek(), "a")
+	eq(pi.HasNext(), true)
 	eq(pi.Peek(), "a")
 	eq(pi.Next(), "a")
 	eq(pi.Next(), "b")
@@ -49,6 +49,7 @@ func Test_all(t *testing.T) {
 	tmp := cacheSize
 	cacheSize = 2
 	pi2 := NewPeekIterator(strings.NewReader("123"))
+	eq(pi2.HasNext(), true)
 	pi2.Next()
 	pi2.Next()
 	pi2.Next()
@@ -58,4 +59,38 @@ func Test_all(t *testing.T) {
 	eq(pi2.Next(), "3")
 	eq(pi2.HasNext(), false)
 	cacheSize = tmp
+}
+
+func Test_peek(t *testing.T) {
+	str := "abcdefg"
+	it := NewPeekIterator(strings.NewReader(str))
+	eq("a", it.Next())
+	eq("b", it.Next())
+	it.Next()
+	it.Next()
+	eq("e", it.Next())
+	eq("f", it.Peek())
+	eq("f", it.Peek())
+	eq("f", it.Next())
+	eq("g", it.Next())
+}
+
+func Test_lookahead2(t *testing.T) {
+	str := "abcdefg"
+	it := NewPeekIterator(strings.NewReader(str))
+	eq("a", it.Next())
+	eq("b", it.Next())
+	eq("c", it.Next())
+	it.PutBack()
+	it.PutBack()
+	eq("b", it.Next())
+}
+
+func Test_goThrough(t *testing.T) {
+	str := "abcdefg"
+	it := NewPeekIterator(strings.NewReader(str))
+	for _, s := range str {
+		eq(string(s), it.Next())
+	}
+	eq(it.HasNext(), false)
 }

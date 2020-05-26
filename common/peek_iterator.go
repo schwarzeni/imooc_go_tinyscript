@@ -68,7 +68,7 @@ func (it *PeekIterator) Next() (val string) {
 		}
 		val = it.scanner.Text()
 	}
-	for it.cache.Len() > cacheSize {
+	for it.cache.Len() >= cacheSize {
 		it.cache.Remove(it.cache.Front())
 	}
 	it.cache.PushBack(val)
