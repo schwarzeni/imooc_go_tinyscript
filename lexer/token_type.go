@@ -8,8 +8,8 @@ const (
 	KEYWORD TokenType = "keyword"
 	// VARIABLE 变量
 	VARIABLE TokenType = "variable"
-	// OPERATO 操作符
-	OPERATO TokenType = "operato"
+	// OPERATOR 操作符
+	OPERATOR TokenType = "operator"
 	// BRACKET 括号
 	BRACKET TokenType = "bracket"
 	// INTEGER 整数

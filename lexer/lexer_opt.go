@@ -59,3 +59,140 @@ func MakeString(it *common.PeekIterator) (*Token, error) {
 	}
 	return nil, NewLexicalError("unexpected error")
 }
+
+// MakeOp 构造运算符
+func MakeOp(it *common.PeekIterator) (*Token, error) {
+	state := 0
+
+	for it.HasNext() {
+		lookahead := it.Next()
+		switch state {
+		case 0:
+			switch lookahead {
+			case "+":
+				state = 1
+			case "-":
+				state = 2
+			case "*":
+				state = 3
+			case "/":
+				state = 4
+			case ">":
+				state = 5
+			case "<":
+				state = 6
+			case "=":
+				state = 7
+			case "!":
+				state = 8
+			case "&":
+				state = 9
+			case "|":
+				state = 10
+			case "^":
+				state = 11
+			case "%":
+				state = 12
+			case ",":
+				return NewToken(OPERATOR, ","), nil
+			case ";":
+				return NewToken(OPERATOR, ";"), nil
+			}
+			break
+		case 1: // +
+			if lookahead == "+" {
+				return NewToken(OPERATOR, "++"), nil
+			} else if lookahead == "=" {
+				return NewToken(OPERATOR, "+="), nil
+			} else {
+				it.PutBack()
+				return NewToken(OPERATOR, "+"), nil
+			}
+		case 2: // -
+			if lookahead == "-" {
+				return NewToken(OPERATOR, "--"), nil
+			} else if lookahead == "=" {
+				return NewToken(OPERATOR, "-="), nil
+			} else {
+				it.PutBack()
+				return NewToken(OPERATOR, "-"), nil
+			}
+		case 3: // *
+			if lookahead == "=" {
+				return NewToken(OPERATOR, "*="), nil
+			}
+			it.PutBack()
+			return NewToken(OPERATOR, "*"), nil
+		case 4: // /
+			if lookahead == "=" {
+				return NewToken(OPERATOR, "/="), nil
+			}
+			it.PutBack()
+			return NewToken(OPERATOR, "/"), nil
+		case 5: // >
+			if lookahead == "=" {
+				return NewToken(OPERATOR, ">="), nil
+			} else if lookahead == ">" {
+				return NewToken(OPERATOR, ">>"), nil
+			} else {
+				it.PutBack()
+				return NewToken(OPERATOR, ">"), nil
+			}
+		case 6: // <
+			if lookahead == "=" {
+				return NewToken(OPERATOR, "<="), nil
+			} else if lookahead == "<" {
+				return NewToken(OPERATOR, "<<"), nil
+			} else {
+				it.PutBack()
+				return NewToken(OPERATOR, "<"), nil
+			}
+		case 7: // =
+			if lookahead == "=" {
+				return NewToken(OPERATOR, "=="), nil
+			}
+			it.PutBack()
+			return NewToken(OPERATOR, "="), nil
+		case 8: // !
+			if lookahead == "=" {
+				return NewToken(OPERATOR, "!="), nil
+			}
+			it.PutBack()
+			return NewToken(OPERATOR, "!"), nil
+		case 9: // &
+			if lookahead == "&" {
+				return NewToken(OPERATOR, "&&"), nil
+			} else if lookahead == "=" {
+				return NewToken(OPERATOR, "&="), nil
+			} else {
+				it.PutBack()
+				return NewToken(OPERATOR, "&"), nil
+			}
+		case 10: // |
+			if lookahead == "|" {
+				return NewToken(OPERATOR, "||"), nil
+			} else if lookahead == "=" {
+				return NewToken(OPERATOR, "|="), nil
+			} else {
+				it.PutBack()
+				return NewToken(OPERATOR, "|"), nil
+			}
+		case 11: // ^
+			if lookahead == "^" {
+				return NewToken(OPERATOR, "^^"), nil
+			} else if lookahead == "=" {
+				return NewToken(OPERATOR, "^="), nil
+			} else {
+				it.PutBack()
+				return NewToken(OPERATOR, "^"), nil
+			}
+		case 12: // %
+			if lookahead == "=" {
+				return NewToken(OPERATOR, "%="), nil
+			}
+			it.PutBack()
+			return NewToken(OPERATOR, "%"), nil
+		}
+	}
+	return nil, NewLexicalError("unexpected error")
+}
