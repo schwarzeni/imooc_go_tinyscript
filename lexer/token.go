@@ -33,6 +33,21 @@ func (t *Token) IsScalar() bool {
 		t._type == FLOAT || t._type == BOOLEAN
 }
 
+// IsNumber 判断是否为数字：整型或浮点型
+func (t *Token) IsNumber() bool {
+	return t._type == INTEGER || t._type == FLOAT
+}
+
+// IsValue 是否是一个值
+func (t *Token) IsValue() bool {
+	return t.IsVariable() || t.IsScalar()
+}
+
+// IsOperator 判断是否为运算符
+func (t *Token) IsOperator() bool {
+	return t._type == OPERATOR
+}
+
 // NewToken 新建 Token 实例
 func NewToken(_type TokenType, _value string) *Token {
 	return &Token{_type: _type, _value: _value}

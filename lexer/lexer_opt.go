@@ -238,11 +238,11 @@ func MakeNumber(it *common.PeekIterator) (*Token, error) {
 			} else if lookahead == "." {
 				state = 5
 			} else {
-				return nil, NewLexicalError("unexpected error")
+				return nil, NewLexicalError("state 3 unexpected error")
 			}
 		case 4: // .
 			if lookahead == "." {
-				return nil, NewLexicalError("unexpected error")
+				return nil, NewLexicalError("state 4 unexpected error")
 			} else if common.IsNumber(lookahead) {
 				state = 20
 			} else {
@@ -252,20 +252,27 @@ func MakeNumber(it *common.PeekIterator) (*Token, error) {
 			if common.IsNumber(lookahead) {
 				state = 20
 			} else {
-				return nil, NewLexicalError("unexpected error")
+				return nil, NewLexicalError("state 5 unexpected error")
 			}
 		case 20: // 数字中已经带有 . 了，小数部分
 			if common.IsNumber(lookahead) {
 				state = 20
 			} else if lookahead == "." {
-				return nil, NewLexicalError("unexpected error")
+				return nil, NewLexicalError("state 20 unexpected error")
 			} else {
 				return NewToken(FLOAT, s.String()), nil
 			}
 		}
 		it.Next()
 		s.WriteString(lookahead)
+		if !it.HasNext() { // 当数字处在结尾的情况
+			if state == 20 || state == 4 {
+				return NewToken(FLOAT, s.String()), nil
+			} else if state == 1 || state == 2 {
+				return NewToken(INTEGER, s.String()), nil
+			}
+		}
 	}
 
-	return nil, NewLexicalError("unexpected error")
+	return nil, NewLexicalError("state end unexpected error")
 }

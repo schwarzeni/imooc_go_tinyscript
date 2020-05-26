@@ -6,7 +6,7 @@ var (
 	ptnLetter   = regexp.MustCompile("^[a-zA-Z]$")
 	ptnNumber   = regexp.MustCompile("^[0-9]$")
 	ptnLiteral  = regexp.MustCompile("^[_a-zA-Z0-9]$")
-	ptnOperator = regexp.MustCompile("^[*+\\-<>=!&|^%/,]$")
+	ptnOperator = regexp.MustCompile("^[*+\\-<>=!&|^%/,;]$")
 )
 
 // IsLetter 判断是否为英文字符

@@ -181,6 +181,9 @@ func TestMakeNumber(t *testing.T) {
 		{name: "test25", args: args{it: common.NewPeekIterator(strings.NewReader("2..23 aaa"))}, want: nil, wantErr: true},
 		{name: "test26", args: args{it: common.NewPeekIterator(strings.NewReader("0..23 aaa"))}, want: nil, wantErr: true},
 		{name: "test27", args: args{it: common.NewPeekIterator(strings.NewReader("-0..23 aaa"))}, want: nil, wantErr: true},
+		{name: "test_1", args: args{it: common.NewPeekIterator(strings.NewReader("20"))}, want: NewToken(INTEGER, "20"), wantErr: false},
+		{name: "test_2", args: args{it: common.NewPeekIterator(strings.NewReader("2"))}, want: NewToken(INTEGER, "2"), wantErr: false},
+		{name: "test_3", args: args{it: common.NewPeekIterator(strings.NewReader("20.32"))}, want: NewToken(FLOAT, "20.32"), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
