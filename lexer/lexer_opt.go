@@ -29,3 +29,33 @@ func MakeVarOrKeyword(it *common.PeekIterator) (*Token, error) {
 
 	return NewToken(VARIABLE, s), nil
 }
+
+// MakeString 构造字符串
+func MakeString(it *common.PeekIterator) (*Token, error) {
+	sBuilder, state := strings.Builder{}, 0
+
+	for it.HasNext() {
+		c := it.Next()
+		sBuilder.WriteString(c)
+		switch state {
+		case 0:
+			switch c {
+			case "\"":
+				state = 1
+			case "'":
+				state = 2
+			default:
+				break
+			}
+		case 1:
+			if c == "\"" {
+				return NewToken(STRING, sBuilder.String()), nil
+			}
+		case 2:
+			if c == "'" {
+				return NewToken(STRING, sBuilder.String()), nil
+			}
+		}
+	}
+	return nil, NewLexicalError("unexpected error")
+}
