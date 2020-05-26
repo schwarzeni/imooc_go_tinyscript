@@ -1,6 +1,8 @@
 package lexer
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Token 每一个字段块的信息
 type Token struct {
@@ -29,4 +31,9 @@ func (t *Token) IsVariable() bool {
 func (t *Token) IsScalar() bool {
 	return t._type == INTEGER || t._type == STRING ||
 		t._type == FLOAT || t._type == BOOLEAN
+}
+
+// NewToken 新建 Token 实例
+func NewToken(_type TokenType, _value string) *Token {
+	return &Token{_type: _type, _value: _value}
 }
