@@ -61,7 +61,7 @@ func (it *PeekIterator) HasNext() bool {
 func (it *PeekIterator) Next() (val interface{}) {
 	if it.putBack.Len() > 0 {
 		elem := it.putBack.Back()
-		val = elem.Value.(string)
+		val = elem.Value
 		it.putBack.Remove(elem)
 	} else {
 		if !it.scanner.Scan() {

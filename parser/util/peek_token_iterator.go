@@ -11,11 +11,7 @@ type PeekTokenIterator struct {
 }
 
 func NewPeekTokenIterator(tokens []*lexer.Token) *PeekTokenIterator {
-	arr := make([]interface{}, len(tokens))
-	for idx, _ := range arr {
-		arr[idx] = tokens[idx]
-	}
-	return &PeekTokenIterator{common.NewPeekIteratorWithArray(arr)}
+	return &PeekTokenIterator{common.NewPeekIteratorWithArray(lexer.Tokens2Arrays(tokens))}
 }
 
 // MatchNextValue 根据 token 的值匹配下一个 token

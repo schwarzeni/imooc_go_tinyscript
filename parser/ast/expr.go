@@ -7,5 +7,8 @@ type Expr struct {
 }
 
 func NewExpr(t ASTNodeType, lexeme *lexer.Token) *Expr {
+	if lexeme == nil {
+		return &Expr{&ASTNode{}}
+	}
 	return &Expr{NewASTNode(t, lexeme.GetValue(), lexeme)}
 }

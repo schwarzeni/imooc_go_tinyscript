@@ -3,7 +3,7 @@ package ast
 import "go-tinyscript/lexer"
 
 type Variable struct {
-	*ASTNode
+	*Factor
 	typeLexeme *lexer.Token
 }
 
@@ -16,5 +16,7 @@ func (v *Variable) SetTypeLexeme(typeLexeme *lexer.Token) {
 }
 
 func NewVariable(token *lexer.Token) *Variable {
-	return &Variable{ASTNode: NewASTNode(VARIABLE, string(VARIABLE), nil)}
+	v := &Variable{Factor: NewFactor(token)}
+	v.nodeType = VARIABLE
+	return v
 }

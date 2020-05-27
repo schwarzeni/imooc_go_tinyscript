@@ -1,9 +1,11 @@
 package ast
 
+import "go-tinyscript/lexer"
+
 type Scalar struct {
-	*ASTNode
+	*Factor
 }
 
-func NewScalar() *Scalar {
-	return &Scalar{NewASTNode(SCALAR, string(SCALAR), nil)}
+func NewScalar(token *lexer.Token) *Scalar {
+	return &Scalar{NewFactor(token)}
 }
