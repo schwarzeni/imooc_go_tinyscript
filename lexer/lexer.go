@@ -12,7 +12,7 @@ type Lexer struct{}
 
 func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 	for it.HasNext() {
-		c, isEnd := it.Next(), !it.HasNext()
+		c, isEnd := it.Next().(string), !it.HasNext()
 
 		if c == " " || c == "\n" {
 			continue
@@ -78,7 +78,7 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 			continue
 		}
 
-		if (c == "+" || c == "-" || c == ".") && !isEnd && common.IsNumber(it.Peek()) {
+		if (c == "+" || c == "-" || c == ".") && !isEnd && common.IsNumber(it.Peek().(string)) {
 			var lastToken *Token = nil
 			if l := len(tokens); l > 0 {
 				lastToken = tokens[l-1]
@@ -110,7 +110,7 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 
 // Analyze 解析主方程
 func (l *Lexer) Analyze(src io.Reader) (tokens []*Token, err error) {
-	it := common.NewPeekIterator(src)
+	it := common.NewPeekIteratorWithIOReader(src)
 	if tokens, err = l.analyze(it); err != nil {
 		return nil, errors.Wrap(err, "Analyze")
 	}

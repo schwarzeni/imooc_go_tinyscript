@@ -10,11 +10,11 @@ type Token struct {
 	_value string
 }
 
-func (t *Token) getType() TokenType {
+func (t *Token) GetType() TokenType {
 	return t._type
 }
 
-func (t *Token) getValue() string {
+func (t *Token) GetValue() string {
 	return t._value
 }
 

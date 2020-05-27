@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"container/list"
 	"errors"
+	"go-tinyscript/common/iterator"
 	"io"
 )
 
@@ -16,7 +17,7 @@ var ErrEnd = errors.New("iterator reachs to end")
 // cache: A B C D
 // putBack D C B A
 type PeekIterator struct {
-	scanner *bufio.Scanner
+	scanner iterator.BaseIterator
 	cache   *list.List
 	putBack *list.List
 }
@@ -32,14 +33,14 @@ func (it *PeekIterator) PutBack() {
 }
 
 // Peek 查看迭代器中的下一个元素
-func (it *PeekIterator) Peek() (val string) {
+func (it *PeekIterator) Peek() (val interface{}) {
 	if it.putBack.Len() > 0 {
-		return it.putBack.Back().Value.(string)
+		return it.putBack.Back().Value
 	}
 	if !it.scanner.Scan() {
 		panic(ErrEnd)
 	}
-	val = it.scanner.Text()
+	val = it.scanner.Value()
 	it.putBack.PushBack(val)
 	return
 }
@@ -50,14 +51,14 @@ func (it *PeekIterator) HasNext() bool {
 		return true
 	}
 	if it.scanner.Scan() {
-		it.putBack.PushBack(it.scanner.Text())
+		it.putBack.PushBack(it.scanner.Value())
 		return true
 	}
 	return false
 }
 
 // Next 读取下一个字符
-func (it *PeekIterator) Next() (val string) {
+func (it *PeekIterator) Next() (val interface{}) {
 	if it.putBack.Len() > 0 {
 		elem := it.putBack.Back()
 		val = elem.Value.(string)
@@ -66,7 +67,7 @@ func (it *PeekIterator) Next() (val string) {
 		if !it.scanner.Scan() {
 			panic(ErrEnd)
 		}
-		val = it.scanner.Text()
+		val = it.scanner.Value()
 	}
 	for it.cache.Len() >= cacheSize {
 		it.cache.Remove(it.cache.Front())
@@ -75,14 +76,25 @@ func (it *PeekIterator) Next() (val string) {
 	return
 }
 
-// NewPeekIterator 初始化迭代器，传入参数需实现接口 io.Reader
-func NewPeekIterator(src io.Reader) (pi *PeekIterator) {
+// NewPeekIteratorWithIOReader 初始化迭代器，传入参数需实现接口 io.Reader
+func NewPeekIteratorWithIOReader(src io.Reader) (pi *PeekIterator) {
 	scanner := bufio.NewScanner(src)
 	scanner.Split(bufio.ScanBytes)
-	pi = &PeekIterator{
-		scanner: scanner,
+	it := iterator.NewScannerIterator(scanner)
+	return NewPeekIterator(it)
+}
+
+// NewPeekIteratorWithArray 初始化迭代器，需要迭代的为一个数组
+func NewPeekIteratorWithArray(src []interface{}) (pi *PeekIterator) {
+	it := iterator.NewArrayIterator(src)
+	return NewPeekIterator(it)
+}
+
+// NewPeekIterator 初始化 PeekIterator 实例
+func NewPeekIterator(it iterator.BaseIterator) (pi *PeekIterator) {
+	return &PeekIterator{
+		scanner: it,
 		cache:   list.New(),
 		putBack: list.New(),
 	}
-	return
 }

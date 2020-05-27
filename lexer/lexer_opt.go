@@ -10,7 +10,7 @@ func MakeVarOrKeyword(it *common.PeekIterator) (*Token, error) {
 	s, sBuilder := "", strings.Builder{}
 
 	for it.HasNext() {
-		lookahead := it.Peek()
+		lookahead := it.Peek().(string)
 		if !common.IsLiteral(lookahead) {
 			s = sBuilder.String()
 			break
@@ -35,7 +35,7 @@ func MakeString(it *common.PeekIterator) (*Token, error) {
 	sBuilder, state := strings.Builder{}, 0
 
 	for it.HasNext() {
-		c := it.Next()
+		c := it.Next().(string)
 		sBuilder.WriteString(c)
 		switch state {
 		case 0:
@@ -202,7 +202,7 @@ func MakeNumber(it *common.PeekIterator) (*Token, error) {
 	s, state := strings.Builder{}, 0
 
 	for it.HasNext() {
-		lookahead := it.Peek()
+		lookahead := it.Peek().(string)
 		switch state {
 		case 0:
 			if lookahead == "0" {

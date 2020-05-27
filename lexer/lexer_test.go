@@ -211,4 +211,4 @@ func Test_function(t *testing.T) {
 	}
 }
 
-// fmt.Printf("NewToken(%s, \"%s\"),\n", strings.ToUpper(string(token.getType())), token.getValue())
+// fmt.Printf("NewToken(%s, \"%s\"),\n", strings.ToUpper(string(token.GetType())), token.GetValue())
