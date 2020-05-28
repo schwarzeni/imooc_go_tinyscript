@@ -211,4 +211,31 @@ func Test_function(t *testing.T) {
 	}
 }
 
+func TestLexer_Bug1(t *testing.T) {
+	// "1 + ++i"
+	// lexer/lexer_opt.go 15, 22
+	str1 := "1 + ++i"
+	l := Lexer{}
+	tokens, err := l.Analyze(strings.NewReader(str1))
+	if err != nil {
+		t.Errorf("got error %v\n", err)
+		return
+	}
+	expected := []*Token{
+		NewToken(INTEGER, "1"),
+		NewToken(OPERATOR, "+"),
+		NewToken(OPERATOR, "++"),
+		NewToken(VARIABLE, "i"),
+	}
+	if len(expected) != len(tokens) {
+		t.Errorf("the size is not equal: expected %d, but got %d", len(expected), len(tokens))
+		return
+	}
+	for idx, token := range tokens {
+		if !reflect.DeepEqual(token, expected[idx]) {
+			t.Errorf("[%d] not equal: expected %v, but got %v", idx, expected[idx], token)
+		}
+	}
+}
+
 // fmt.Printf("NewToken(%s, \"%s\"),\n", strings.ToUpper(string(token.GetType())), token.GetValue())

@@ -1,9 +1,9 @@
 package ast
 
 type StmtAssign struct {
-	*ASTNode
+	*Stmt
 }
 
 func NewStmtAssign() *StmtAssign {
-	return &StmtAssign{NewASTNode(ASSIGN_STMT, string(ASSIGN_STMT), nil)}
+	return &StmtAssign{NewStmt(ASSIGN_STMT, string(ASSIGN_STMT))}
 }

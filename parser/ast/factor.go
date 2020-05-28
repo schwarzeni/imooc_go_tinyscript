@@ -25,5 +25,7 @@ func ParseFactor(it *util.PeekTokenIterator) (Node, error) {
 		it.Next()
 		return NewScalar(token), nil
 	}
-	return nil, util.NewParseError(token)
+	// fix error for (1+2)
+	//return nil, errors.WithStack(util.NewParseError(token))
+	return nil, nil
 }

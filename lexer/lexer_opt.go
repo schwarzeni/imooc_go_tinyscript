@@ -12,12 +12,14 @@ func MakeVarOrKeyword(it *common.PeekIterator) (*Token, error) {
 	for it.HasNext() {
 		lookahead := it.Peek().(string)
 		if !common.IsLiteral(lookahead) {
-			s = sBuilder.String()
+			//s = sBuilder.String()
 			break
 		}
 		sBuilder.WriteString(lookahead)
 		it.Next()
 	}
+	// fix bug 1 + ++i not read last litter
+	s = sBuilder.String()
 
 	if IsKeyword(s) {
 		return NewToken(KEYWORD, s), nil

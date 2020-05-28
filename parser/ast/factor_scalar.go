@@ -7,5 +7,7 @@ type Scalar struct {
 }
 
 func NewScalar(token *lexer.Token) *Scalar {
-	return &Scalar{NewFactor(token)}
+	s := &Scalar{NewFactor(token)}
+	s.nodeType = SCALAR
+	return s
 }

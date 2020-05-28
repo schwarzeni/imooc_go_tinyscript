@@ -1,9 +1,9 @@
 package ast
 
 type StmtFunctionDeclare struct {
-	*ASTNode
+	*Stmt
 }
 
 func NewStmtFunctionDeclare() *StmtFunctionDeclare {
-	return &StmtFunctionDeclare{NewASTNode(FUNCTION_DECLARE_STMT, string(FUNCTION_DECLARE_STMT), nil)}
+	return &StmtFunctionDeclare{NewStmt(FUNCTION_DECLARE_STMT, string(FUNCTION_DECLARE_STMT))}
 }

@@ -1,9 +1,9 @@
 package ast
 
 type StmtFor struct {
-	*ASTNode
+	*Stmt
 }
 
 func NewStmtFor() *StmtFor {
-	return &StmtFor{NewASTNode(FOR_STMT, string(FOR_STMT), nil)}
+	return &StmtFor{NewStmt(FOR_STMT, string(FOR_STMT))}
 }

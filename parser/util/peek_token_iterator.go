@@ -4,6 +4,8 @@ import (
 	"go-tinyscript/common"
 	"go-tinyscript/lexer"
 	"reflect"
+
+	"github.com/pkg/errors"
 )
 
 type PeekTokenIterator struct {
@@ -18,7 +20,7 @@ func NewPeekTokenIterator(tokens []*lexer.Token) *PeekTokenIterator {
 func (it *PeekTokenIterator) MatchNextValue(value string) (token *lexer.Token, err error) {
 	token = it.Next().(*lexer.Token)
 	if token.GetValue() != value {
-		return nil, NewParseError(token)
+		return nil, errors.WithStack(NewParseError(token))
 	}
 	return
 }
@@ -27,7 +29,7 @@ func (it *PeekTokenIterator) MatchNextValue(value string) (token *lexer.Token, e
 func (it *PeekTokenIterator) MatchNextType(t lexer.TokenType) (token *lexer.Token, err error) {
 	token = it.Next().(*lexer.Token)
 	if !reflect.DeepEqual(token.GetType(), t) {
-		return nil, NewParseError(token)
+		return nil, errors.WithStack(NewParseError(token))
 	}
 	return
 }
