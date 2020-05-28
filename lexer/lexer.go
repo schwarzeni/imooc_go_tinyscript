@@ -52,7 +52,7 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 			it.PutBack()
 			t, err := MakeString(it)
 			if err != nil {
-				return nil, errors.Wrap(err, "MakeString")
+				return nil, err
 			}
 			tokens = append(tokens, t)
 			continue
@@ -62,7 +62,7 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 			it.PutBack()
 			t, err := MakeVarOrKeyword(it)
 			if err != nil {
-				return nil, errors.Wrap(err, "MakeVarOrKeyword")
+				return nil, err
 			}
 			tokens = append(tokens, t)
 			continue
@@ -72,7 +72,7 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 			it.PutBack()
 			t, err := MakeNumber(it)
 			if err != nil {
-				return nil, errors.Wrap(err, "MakeNumber")
+				return nil, err
 			}
 			tokens = append(tokens, t)
 			continue
@@ -87,7 +87,7 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 				it.PutBack()
 				t, err := MakeNumber(it)
 				if err != nil {
-					return nil, errors.Wrap(err, "MakeNumber")
+					return nil, err
 				}
 				tokens = append(tokens, t)
 				continue
@@ -98,12 +98,12 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 			it.PutBack()
 			t, err := MakeOp(it)
 			if err != nil {
-				return nil, errors.Wrap(err, "MakeOp")
+				return nil, err
 			}
 			tokens = append(tokens, t)
 			continue
 		}
-		return nil, NewLexicalErrorWithChar(c)
+		return nil, errors.WithStack(NewLexicalErrorWithChar(c))
 	}
 	return
 }
@@ -112,7 +112,7 @@ func (l *Lexer) analyze(it *common.PeekIterator) (tokens []*Token, err error) {
 func (l *Lexer) Analyze(src io.Reader) (tokens []*Token, err error) {
 	it := common.NewPeekIteratorWithIOReader(src)
 	if tokens, err = l.analyze(it); err != nil {
-		return nil, errors.Wrap(err, "Analyze")
+		return nil, err
 	}
 	return
 }

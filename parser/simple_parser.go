@@ -4,8 +4,6 @@ import (
 	"go-tinyscript/lexer"
 	"go-tinyscript/parser/ast"
 	"go-tinyscript/parser/util"
-
-	"github.com/pkg/errors"
 )
 
 // SimpleParser 简答的 parser
@@ -15,7 +13,7 @@ func SimpleParser(it *util.PeekTokenIterator) (ast.Node, error) {
 	expr := ast.NewExpr(ast.NONE, nil)
 	scalar, err := ast.ParseFactor(it)
 	if err != nil {
-		return nil, errors.Wrap(err, "ParseFactor")
+		return nil, err
 	}
 	if !it.HasNext() {
 		return scalar, nil
@@ -29,7 +27,7 @@ func SimpleParser(it *util.PeekTokenIterator) (ast.Node, error) {
 	expr.SetType(ast.BINARY_EXPR)
 	rightNode, err := SimpleParser(it)
 	if err != nil {
-		return nil, errors.Wrap(err, "rightNode SimpleParser")
+		return nil, err
 	}
 	expr.AddChild(rightNode)
 	return expr, nil
