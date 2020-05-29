@@ -13,7 +13,7 @@ const (
 	// BRACKET 括号
 	BRACKET TokenType = "bracket"
 	// INTEGER 整数
-	INTEGER = "integer"
+	INTEGER = "int"
 	// STRING 字符串
 	STRING = "string"
 	// FLOAT 浮点数

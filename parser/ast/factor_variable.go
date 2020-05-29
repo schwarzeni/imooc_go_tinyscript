@@ -1,6 +1,8 @@
 package ast
 
-import "go-tinyscript/lexer"
+import (
+	"go-tinyscript/lexer"
+)
 
 type Variable struct {
 	*Factor

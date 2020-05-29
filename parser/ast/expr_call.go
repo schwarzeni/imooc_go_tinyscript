@@ -5,10 +5,12 @@ import (
 	"go-tinyscript/parser/util"
 )
 
+// ExprCall 函数调用语句
 type ExprCall struct {
 	*ASTNode
 }
 
+// NewExprCall 新建一个函数调用语句
 func NewExprCall() *ExprCall {
 	return &ExprCall{NewASTNode(CALL_EXPTR, string(CALL_EXPTR), nil)}
 }

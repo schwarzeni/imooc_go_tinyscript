@@ -48,6 +48,15 @@ func (t *Token) IsOperator() bool {
 	return t._type == OPERATOR
 }
 
+// IsType 判断其是否为数值类型关键字
+func (t *Token) IsType() bool {
+	return t._value == "bool" ||
+		t._value == "int" ||
+		t._value == "float" ||
+		t._value == "string" ||
+		t._value == "void"
+}
+
 // NewToken 新建 Token 实例
 func NewToken(_type TokenType, _value string) *Token {
 	return &Token{_type: _type, _value: _value}
