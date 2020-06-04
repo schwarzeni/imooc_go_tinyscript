@@ -28,6 +28,9 @@ func (sIF *StmtIf) GetBlock() Node {
 // GetElseStmt 获取 else 语句块
 func (sIF *StmtIf) GetElseStmt() Node {
 	block := sIF.GetChild(2)
+	if block == nil {
+		return nil
+	}
 	if block.GetType() == BLOCK {
 		return block
 	}
@@ -37,6 +40,9 @@ func (sIF *StmtIf) GetElseStmt() Node {
 // GetElseIfStmt 获取 else if 语句块
 func (sIF *StmtIf) GetElseIfStmt() Node {
 	stmtIf := sIF.GetChild(2)
+	if stmtIf == nil {
+		return nil
+	}
 	if stmtIf.GetType() == IF_STMT {
 		return stmtIf
 	}

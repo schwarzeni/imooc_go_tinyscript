@@ -2,6 +2,8 @@ package translator
 
 import (
 	"errors"
+	"fmt"
+	"go-tinyscript/lexer"
 	"go-tinyscript/parser/ast"
 	"go-tinyscript/translator/symbol"
 
@@ -28,6 +30,10 @@ func (t *Translator) Translate(astNode ast.Node) (*TAProgram, error) {
 func (t *Translator) translateStmt(program *TAProgram, node ast.Node, symbolTable *symbol.SymbolTable) error {
 	var err error
 	switch node.GetType() {
+	case ast.BLOCK:
+		err = t.translateBlock(program, node.(*ast.Block), symbolTable)
+	case ast.IF_STMT:
+		err = t.translateIfStmt(program, node.(*ast.StmtIf), symbolTable)
 	case ast.ASSIGN_STMT:
 		err = t.translateAssignStmt(program, node, symbolTable)
 	case ast.DECLARE_STMT:
@@ -36,6 +42,62 @@ func (t *Translator) translateStmt(program *TAProgram, node ast.Node, symbolTabl
 		err = errNotImpl(string(node.GetType()))
 	}
 	return err
+}
+
+// translateBlock 翻译 Block
+func (t *Translator) translateBlock(program *TAProgram, block *ast.Block, parentTable *symbol.SymbolTable) error {
+	symbolTable := symbol.NewSymbolTable()
+	// 每个Block增加一个作用域链
+	parentOffset := symbolTable.CreateVariable()
+	parentOffset.SetLexeme(lexer.NewToken(lexer.INTEGER, fmt.Sprintf("%d", symbolTable.LocalSize())))
+	parentTable.AddChild(symbolTable)
+	for _, child := range block.GetChildren() {
+		if err := t.translateStmt(program, child, symbolTable); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// translateIfStmt 翻译 if 语句
+func (t *Translator) translateIfStmt(program *TAProgram, node *ast.StmtIf, symbolTable *symbol.SymbolTable) error {
+	expr := node.GetExpr()
+	exprAddr, err := t.translateExpr(program, expr, symbolTable)
+	if err != nil {
+		return err
+	}
+	ifOpCode := NewTAInstruction(exprAddr, nil, "", nil, IF)
+	program.Add(ifOpCode)
+
+	if err = t.translateBlock(program, node.GetBlock().(*ast.Block), symbolTable); err != nil {
+		return err
+	}
+
+	var gotoInstruction *TAInstruction
+	// IF ... ElSE ...
+	if node.GetChild(2) != nil {
+		gotoInstruction = NewTAInstruction(nil, nil, "", nil, GOTO)
+		program.Add(gotoInstruction)
+		labelEndIf := program.AddLabel()
+		ifOpCode.SetArg2(labelEndIf.Arg1())
+	}
+
+	if node.GetElseStmt() != nil { // ELSE {
+		err = t.translateBlock(program, node.GetElseStmt().(*ast.Block), symbolTable)
+	} else if node.GetElseIfStmt() != nil { // ELSE IF ... {
+		err = t.translateIfStmt(program, node.GetElseIfStmt().(*ast.StmtIf), symbolTable)
+	}
+	if err != nil {
+		return err
+	}
+
+	labelEnd := program.AddLabel()
+	if node.GetChild(2) == nil {
+		ifOpCode.SetArg2(labelEnd.Arg1())
+	} else {
+		gotoInstruction.SetArg1(labelEnd.Arg1())
+	}
+	return nil
 }
 
 // translateAssignStmt 翻译赋值语句
@@ -92,6 +154,7 @@ func (t *Translator) translateExpr(program *TAProgram, node ast.Node, symbolTabl
 // translateDeclareStmt 解析声明语句
 func (t *Translator) translateDeclareStmt(program *TAProgram, node ast.Node, symbolTable *symbol.SymbolTable) error {
 	lexeme := node.GetChild(0).GetLexeme()
+	// 不能重复声明变量
 	if symbolTable.Exists(lexeme) {
 		return errpkg.WithStack(errors.New("Syntax Error, Identifier " + lexeme.GetValue() + " is already defined"))
 	}

@@ -33,7 +33,7 @@ func (p *TAProgram) Instructions() []*TAInstruction {
 func (p *TAProgram) AddLabel() *TAInstruction {
 	label := fmt.Sprintf("L%d", p.labelCounter)
 	p.labelCounter++
-	taCode := NewTAInstruction(LABEL, nil, "", nil, "")
+	taCode := NewTAInstruction(nil, nil, "", nil, LABEL)
 	taCode.SetArg1(label)
 	p.instructions = append(p.instructions, taCode)
 	return taCode
