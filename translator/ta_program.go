@@ -14,7 +14,7 @@ type TAProgram struct {
 }
 
 func NewTAProgram() *TAProgram {
-	return &TAProgram{}
+	return &TAProgram{staticSymbolTable: symbol.NewStaticSymbolTable()} // fix: nil staticSymbolTable error
 }
 
 func (p *TAProgram) SetStaticSymbolTable(staticSymbolTable *symbol.StaticSymbolTable) {

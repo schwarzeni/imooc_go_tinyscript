@@ -69,9 +69,9 @@ func (i *TAInstruction) String() string {
 	case RETURN:
 		return fmt.Sprintf("RETURN %s", i.arg1)
 	case PARAM:
-		return fmt.Sprintf("PARAM %s %s", i.arg1, i.arg2)
+		return fmt.Sprintf("PARAM %s %d", i.arg1, i.arg2)
 	case SP:
-		return fmt.Sprintf("SP %s", i.arg1)
+		return fmt.Sprintf("SP %d", i.arg1)
 	case CALL:
 		return fmt.Sprintf("CALL %s", i.arg1)
 	}

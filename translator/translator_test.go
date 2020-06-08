@@ -167,3 +167,41 @@ func TestTransDeclare(t *testing.T) {
 	}
 	assertOpcodes(expected, getProgram(source).Instructions(), t)
 }
+
+func TestFunctionDeclare(t *testing.T) {
+	source := `
+func add(int a, int b) int {
+  return a + b
+}
+`
+	expected := `L0:
+FUNC_BEGIN
+p1 = a + b
+RETURN p1`
+	assert.Eq(expected, getProgram(source).String())
+}
+
+func TestFunctionDeclareAndCall(t *testing.T) {
+	source := `
+func fact(int n)  int {
+ if(n == 0) {
+   return 1
+ }
+ return fact(n-1) * n
+}
+`
+	expected := `L0:
+FUNC_BEGIN
+p1 = n == 0
+IF p1 ELSE L1
+RETURN 1
+L1:
+p2 = n - 1
+PARAM p2 6
+SP -5
+CALL L0
+SP 5
+p4 = p3 * n
+RETURN p4`
+	assert.Eq(expected, getProgram(source).String())
+}
